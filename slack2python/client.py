@@ -35,6 +35,9 @@ def init(bot_user_oauth_token: str, signing_secret: str):
     """
     global _app, _client
 
+    if _app is not None or _client is not None:
+        raise RuntimeError("init() cannot be executed twice or more")
+
     _app = App(
         token=bot_user_oauth_token,
         signing_secret=signing_secret,
