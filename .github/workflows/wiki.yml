@@ -1,0 +1,58 @@
+# 参考
+# * https://qiita.com/yukinarit/items/0996180032c077443efb
+# * https://yiskw713.hatenablog.com/entry/2021/12/28/190000
+
+
+name: wiki
+# イベントトリガーの設定
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "*.py"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "*.py"
+  workflow_dispatch:
+
+jobs:
+  generate_pdoc:
+    name: generating pdoc
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      # set up python
+      - name: Setting up python.
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+
+      # install poetry
+      - name: Install Poetry
+        run: pip install poetry
+
+      # install dependencies
+      - name: Install Dependencies
+        run: poetry install --no-interaction
+
+      # pdocでドキュメントを生成
+      - name: Pdoc
+        run: poetry run pdoc --html -o docs --force main.py
+
+      # 差分をgitにpushする
+      # ref: https://zenn.dev/lollipop_onl/articles/eoz-gha-push-diffs
+      - name: Push new docs
+        run: |
+          git remote set-url origin https://github-actions:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          if (git diff --shortstat | grep '[0-9]'); then \
+            git add .; \
+            git commit -m "Generating docs via GitHub Actions"; \
+            git push origin HEAD:${GITHUB_REF}; \
+          fi
