@@ -2,8 +2,8 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Dict
 
-from client import client
-from util import Waiter, fetch_cursored
+from .client import client
+from .util import Waiter, fetch_cursored
 
 
 class Member:
