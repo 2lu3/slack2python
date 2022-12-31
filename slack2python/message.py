@@ -12,6 +12,7 @@ if TYPE_CHECKING:
 @dataclass
 class Message:
     """メッセージを表現するクラス"""
+
     channel: Channel
     text: str
     timestamp: str
