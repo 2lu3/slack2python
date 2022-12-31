@@ -5,18 +5,22 @@ from slack_sdk import WebClient
 _app: Optional[App] = None
 _client: Optional[WebClient] = None
 
+
 def raise_uninitialized_error():
     raise RuntimeError("Please use init() to initialize slack2python")
+
 
 def app() -> App:
     if _app is None:
         raise_uninitialized_error()
     return _app
 
+
 def client() -> WebClient:
     if _client is None:
         raise_uninitialized_error()
     return _client
+
 
 def init(bot_user_oauth_token: str, signing_secret: str):
     """initialize slack2python
@@ -44,7 +48,8 @@ def init(bot_user_oauth_token: str, signing_secret: str):
     )
     _client = _app.client
 
-def start(port: int=8000):
+
+def start(port: int = 8000):
     """start a slack bolt session
 
     Args:

@@ -45,7 +45,7 @@ class Channel:
                 cursor=cursor, channel=self.id
             ),
             "members",
-            tire=4
+            tire=4,
         )
         return [Member.fetch(member_id) for member_id in response]
 
@@ -57,7 +57,7 @@ class Channel:
                 cursor=cursor, exclude_archived=True
             ),
             "channels",
-            tire=2
+            tire=2,
         )
 
         channels = [

@@ -9,7 +9,6 @@ if TYPE_CHECKING:
     from channel import Channel
 
 
-
 @dataclass
 class Message:
     channel: Channel

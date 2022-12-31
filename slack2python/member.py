@@ -57,7 +57,11 @@ class Member:
             "members",
             2,
         )
-        members = [Member(member["id"], member["profile"]["real_name"]) for member in members if _is_valid_member(member)]
+        members = [
+            Member(member["id"], member["profile"]["real_name"])
+            for member in members
+            if _is_valid_member(member)
+        ]
         keys = [member.id for member in members]
         return dict(zip(keys, members))
 
