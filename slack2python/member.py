@@ -21,6 +21,7 @@ class Member:
 
     @property
     def mention(self) -> str:
+        """slack中でメンションする場合このメソッドが返す文字列を使う必要がある"""
         return f"<@{self.id}>"
 
     @staticmethod
