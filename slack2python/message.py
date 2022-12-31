@@ -2,11 +2,11 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Dict, Optional
 
-from util import Waiter
-from client import client
+from .util import Waiter
+from .client import client
 
 if TYPE_CHECKING:
-    from channel import Channel
+    from .channel import Channel
 
 
 @dataclass

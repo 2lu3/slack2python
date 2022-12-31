@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
 from time import sleep
 from typing import Callable, Dict, List
-
 from slack_sdk.web import SlackResponse
 
 

@@ -2,10 +2,10 @@ from __future__ import annotations
 from functools import lru_cache
 from typing import Dict, List
 
-from member import Member
-from client import client
-from message import Message
-from util import Waiter, fetch_cursored
+from .member import Member
+from .client import client
+from .message import Message
+from .util import Waiter, fetch_cursored
 
 
 class Channel:
