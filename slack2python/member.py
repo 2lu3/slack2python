@@ -69,6 +69,7 @@ class Member:
     @classmethod
     @lru_cache
     def fetch(cls, member_id: str) -> Member:
+        """メンバーidからメンバーを返す"""
         # return fetch_all()'s member to avoid ask slack server frequently
         if member_id in cls.fetch_all().keys():
             return cls.fetch_all()[member_id]
