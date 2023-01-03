@@ -51,3 +51,4 @@ jobs:
           commit_message: Wiki Generation by wiki.yml
           branch: gh-pages
           create_branch: true
+          push_options: '--force'
