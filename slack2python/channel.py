@@ -1,6 +1,6 @@
 from __future__ import annotations
 from functools import lru_cache
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from .member import Member
 from .client import client
@@ -51,10 +51,12 @@ class Channel:
 
     @staticmethod
     @lru_cache()
-    def fetch_all():
+    def fetch_all() -> Dict[str, Channel]:
         response = fetch_cursored(
             lambda cursor: client().conversations_list(
-                cursor=cursor, exclude_archived=True
+                cursor=cursor,
+                exclude_archived=True,
+                types="public_channel,private_channel,mpim,im",
             ),
             "channels",
             tire=2,
@@ -74,19 +76,51 @@ class Channel:
         return dict(zip(id_list, channels))
 
     @classmethod
-    def fetch_public_channel(cls, channel_id: str):
-        channels = cls.fetch_all()
-        if channel_id in channels.keys():
-            return channels[channel_id]
+    def fetch(
+        cls, *, channel_id: Optional[str] = None, channel_name: Optional[str] = None
+    ):
+        """channel_id もしくは channel_name でチャンネルを検索し返す"""
+        def query_by_id(channel_id: str):
+            return cls.fetch_all().get(channel_id, None)
+        def query_by_name(channel_name: str):
+            channels = list(cls.fetch_all().values())
+            channel_names = [channel_name for channel in cls.fetch_all()]
 
-        # キャッシュを削除する
-        cls.fetch_all.cache_clear()
-        channels = cls.fetch_all()
-        if channel_id in channels.keys():
-            return channels[channel_id]
+            try:
+                return channels[channel_names.index(channel_name)]
+            except ValueError:
+                return None
 
-        # それでも見つからない場合
-        raise RuntimeError(f"Channel id {channel_id} not found")
+        assert (channel_id is None or channel_name is None) and (
+            channel_id is not None and channel_name is not None
+        )
+
+        if channel_id is not None:
+            if query_by_id(channel_id) is not None:
+                return query_by_id(channel_id)
+
+            # キャッシュを削除する
+            cls.fetch_all.cache_clear()
+
+            if query_by_id(channel_id) is not None:
+                return query_by_id(channel_id)
+
+            # それでも見つからない場合
+            raise RuntimeError(f"Channel id {channel_id} not found")
+        else:
+            # channel_name is not None
+            if query_by_name(channel_name) is not None:
+                return query_by_name(channel_name)
+
+            # キャッシュを削除する
+            cls.fetch_all.cache_clear()
+
+            if query_by_id(channel_id) is not None:
+                return query_by_id(channel_id)
+
+            # それでも見つからない場合
+            raise RuntimeError(f"Channel name {channel_name} not found")
+
 
     @classmethod
     def fetch_by_response(cls, response: Dict[str, str]) -> Channel:
