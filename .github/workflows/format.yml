@@ -3,7 +3,7 @@ name: format
 on:
   push:
     paths:
-      - "*.py"
+      - "**/*.py"
 
 jobs:
     formatter:
@@ -27,7 +27,6 @@ jobs:
             run: poetry run black .
           - name: autoflake
             run: poetry run autoflake -r .
-          - uses: stefanzweifel/git-auto-commit-action@v3.0.0
+          - uses: stefanzweifel/git-auto-commit-action@v4
             with:
               commit_message: Apply Code Formatter Change
-              ref: ${{ github.head_ref }}
