@@ -31,8 +31,7 @@ class Channel:
             channel=self.id, users=[member.id for member in members]
         )
 
-        Message.post(
-            self,
+        self.post(
             f"""{len(members)}人を{self.name}に招待しました
 招待者リスト: {", ".join([member.name for member in members])}
 """,
