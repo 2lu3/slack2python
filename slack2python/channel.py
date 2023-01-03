@@ -79,12 +79,15 @@ class Channel:
         cls, *, channel_id: Optional[str] = None, channel_name: Optional[str] = None
     ):
         """channel_id もしくは channel_name でチャンネルを検索し返す"""
+
         def query_by_id(channel_id: str):
             return cls.fetch_all().get(channel_id, None)
 
         def query_by_name(channel_name: str):
             channels: List[Channel] = list(cls.fetch_all().values())
-            channel_names: List[str] = [channel.name for channel in cls.fetch_all().values()]
+            channel_names: List[str] = [
+                channel.name for channel in cls.fetch_all().values()
+            ]
 
             try:
                 return channels[channel_names.index(channel_name)]
@@ -124,7 +127,6 @@ class Channel:
 
             # それでも見つからない場合
             raise RuntimeError(f"Channel name {channel_name} not found")
-
 
     @classmethod
     def fetch_by_response(cls, response: Dict[str, str]) -> Channel:
