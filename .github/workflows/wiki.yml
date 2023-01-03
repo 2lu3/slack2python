@@ -11,8 +11,7 @@ on:
       - main
     paths:
       - "**/*.py"
-  pull_request:
-    branches:
+  pull_request: branches:
       - main
     paths:
       - "**/*.py"
@@ -42,7 +41,7 @@ jobs:
 
       # pdocでドキュメントを生成
       - name: Pdoc
-        run: poetry run pdoc -t slack2python -o docs slack2python
+        run: poetry run pdoc slack2python --html -o docs --force
 
       # 差分をgitにpushする
       # ref: https://zenn.dev/lollipop_onl/articles/eoz-gha-push-diffs
