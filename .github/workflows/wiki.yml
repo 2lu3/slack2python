@@ -11,7 +11,8 @@ on:
       - main
     paths:
       - "**/*.py"
-  pull_request: branches:
+  pull_request:
+    branches:
       - main
     paths:
       - "**/*.py"
