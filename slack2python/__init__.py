@@ -1,7 +1,3 @@
-"""
-.. include:: ../README.md
-"""
-
 from .channel import Channel
 from .client import init, start, app, client
 from .member import Member
