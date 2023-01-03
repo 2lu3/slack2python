@@ -82,9 +82,10 @@ class Channel:
         """channel_id もしくは channel_name でチャンネルを検索し返す"""
         def query_by_id(channel_id: str):
             return cls.fetch_all().get(channel_id, None)
+
         def query_by_name(channel_name: str):
-            channels = list(cls.fetch_all().values())
-            channel_names = [channel_name for channel in cls.fetch_all()]
+            channels: List[Channel] = list(cls.fetch_all().values())
+            channel_names: List[str] = [channel.name for channel in cls.fetch_all().values()]
 
             try:
                 return channels[channel_names.index(channel_name)]
@@ -96,27 +97,31 @@ class Channel:
         )
 
         if channel_id is not None:
-            if query_by_id(channel_id) is not None:
-                return query_by_id(channel_id)
+            channel = query_by_id(channel_id)
+            if channel is not None:
+                return channel
 
             # キャッシュを削除する
             cls.fetch_all.cache_clear()
 
-            if query_by_id(channel_id) is not None:
-                return query_by_id(channel_id)
+            channel = query_by_id(channel_id)
+            if channel is not None:
+                return channel
 
             # それでも見つからない場合
             raise RuntimeError(f"Channel id {channel_id} not found")
         else:
             # channel_name is not None
-            if query_by_name(channel_name) is not None:
-                return query_by_name(channel_name)
+            channel = query_by_name(channel_name)
+            if channel is not None:
+                return channel
 
             # キャッシュを削除する
             cls.fetch_all.cache_clear()
 
-            if query_by_id(channel_id) is not None:
-                return query_by_id(channel_id)
+            channel = query_by_name(channel_name)
+            if channel is not None:
+                return channel
 
             # それでも見つからない場合
             raise RuntimeError(f"Channel name {channel_name} not found")
@@ -133,4 +138,42 @@ class Channel:
                 Member.fetch(response["user"]),
             )
         else:
-            return cls.fetch_public_channel(response.get("channel", ""))
+            return cls.fetch(channel_id=response.get("channel", ""))
+
+    def post(
+        self,
+        message: str,
+        *,
+        image_url: Optional[str] = None,
+        reply2: Optional[Message] = None,
+        reply2channel: bool = False,
+    ):
+        def _blocks():
+            if image_url is None:
+                return None
+            else:
+                return [
+                    {
+                        "type": "section",
+                        "text": {"type": "plain_text", "text": message},
+                    },
+                    {
+                        "type": "image",
+                        "image_url": image_url,
+                        "alt_text": "image is not loaded",
+                    },
+                ]
+
+        if reply2 is None:
+            reply2 = Message(self, "", "", "")
+
+        Waiter(tire=3)
+        response: Dict = client().chat_postMessage(
+            channel=self.id,
+            text=message,
+            thread_ts=reply2.timestamp,
+            reply_broadcast=reply2channel,
+            blocks=_blocks(),
+        )  # type: ignore
+
+        return Message(self, message, response["ts"], reply2.timestamp)
