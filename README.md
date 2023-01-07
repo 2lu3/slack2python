@@ -5,6 +5,7 @@ a python wrapper of slack bolt
 
 ```python
 import slack2python
+from slack_bolt import App
 
 def on_message(event):
     if event.get("text", "") == "init":
@@ -33,16 +34,17 @@ def invite_all(ack, body):
     else:
         channel.post(f"all {len(all_workspace_members)} are in this channel")
 
-
-slack2python.init(
-    bot_user_oauth_token=os.environ.get("SLACK_BOT_USER_OAUTH_TOKEN"),
+app = App(
+    token=os.environ.get("SLACK_BOT_USER_OAUTH_TOKEN"),
     signing_secret=os.environ.get("SLACK_SIGNING_SECRET")
     )
 
-slack2python.app().command("/invites")(invite_all)
-slack2python.app().event("message")(on_message)
+slack2python.set_app(app)
 
-slack2python.start(port=int(os.environ.get("PORT", 8000)))
+app.command("/invites")(invite_all)
+app.event("message")(on_message)
+
+app.start(port=int(os.environ.get("PORT", 8000)))
 
 ```
 
