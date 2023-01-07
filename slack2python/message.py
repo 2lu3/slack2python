@@ -14,9 +14,13 @@ class Message:
     """メッセージを表現するクラス"""
 
     channel: Channel
+    """メッセージが投稿されたチャンネル"""
     text: str
+    """テキスト"""
     timestamp: str
+    """メッセージの時刻"""
     root_timestamp: str = ""
+    """メッセージのスレッドの時刻"""
 
     def add_reaction(self, reaction_name: str):
         Waiter(tire=3)
